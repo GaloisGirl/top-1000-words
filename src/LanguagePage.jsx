@@ -120,7 +120,10 @@ function LanguagePage() {
                       {wordData.gender || ''}
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <button className="text-gray-400 hover:text-gray-600 text-xl">
+                      <button 
+                        className="text-gray-400 hover:text-gray-600 text-xl"
+                        aria-label={`Play audio pronunciation for ${wordData.word}`}
+                      >
                         🔊
                       </button>
                     </td>
@@ -131,6 +134,7 @@ function LanguagePage() {
                           <button
                             onClick={() => toggleTranslation(wordData.rank)}
                             className="text-gray-400 hover:text-gray-600"
+                            aria-label="Hide translation"
                           >
                             👁️
                           </button>
@@ -139,6 +143,7 @@ function LanguagePage() {
                         <button
                           onClick={() => toggleTranslation(wordData.rank)}
                           className="text-gray-400 hover:text-gray-600"
+                          aria-label="Show translation"
                         >
                           👁️
                         </button>
