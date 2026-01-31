@@ -45,6 +45,12 @@ function LanguagePage() {
   };
   
   const speakWord = (word) => {
+    // Check if Web Speech API is available
+    if (!window.speechSynthesis) {
+      console.warn('Text-to-Speech is not supported in this browser');
+      return;
+    }
+    
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
     
