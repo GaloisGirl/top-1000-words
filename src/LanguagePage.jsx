@@ -12,6 +12,7 @@ function LanguagePage() {
   // State to track TTS availability and status
   const [ttsAvailable, setTtsAvailable] = useState(false);
   const [ttsError, setTtsError] = useState('');
+  const [runtimeError, setRuntimeError] = useState('');
   const [speakingRank, setSpeakingRank] = useState(null);
   const utteranceRef = useRef(null);
   
@@ -90,11 +91,13 @@ function LanguagePage() {
   };
   
   const speakWord = (word, rank) => {
-    // Check if Web Speech API is available
+    // Check if Web Speech API is available (should not happen due to disabled buttons)
     if (!window.speechSynthesis) {
-      alert('Text-to-Speech is not supported in your browser. Try using Chrome, Edge, Safari, or Firefox on desktop, or Chrome/Safari on mobile.');
       return;
     }
+    
+    // Clear any previous runtime errors
+    setRuntimeError('');
     
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
@@ -126,12 +129,15 @@ function LanguagePage() {
       utteranceRef.current = null;
       
       if (event.error === 'not-allowed') {
-        alert('Text-to-Speech was blocked. Please check your browser permissions.');
+        setRuntimeError('Text-to-Speech was blocked. Please check your browser permissions.');
       } else if (event.error === 'network') {
-        alert('Text-to-Speech requires an internet connection.');
+        setRuntimeError('Text-to-Speech requires an internet connection.');
       } else {
-        alert('Text-to-Speech failed. Your browser may not support this language.');
+        setRuntimeError('Text-to-Speech failed. Your browser may not support this language.');
       }
+      
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => setRuntimeError(''), 5000);
     };
     
     // Get available voices
@@ -153,8 +159,11 @@ function LanguagePage() {
       window.speechSynthesis.speak(utterance);
     } catch (error) {
       console.error('Error speaking word:', error);
-      alert('Text-to-Speech failed. Please try again.');
+      setRuntimeError('Text-to-Speech failed. Please try again.');
       setSpeakingRank(null);
+      
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => setRuntimeError(''), 5000);
     }
   };
   
@@ -237,6 +246,14 @@ function LanguagePage() {
               <p className="text-sm mt-1">
                 <strong>Not supported:</strong> DuckDuckGo browser, some mobile browsers
               </p>
+            </div>
+          )}
+          
+          {/* TTS runtime error notice */}
+          {runtimeError && (
+            <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+              <p className="font-semibold">🔴 Text-to-Speech Error</p>
+              <p className="text-sm mt-1">{runtimeError}</p>
             </div>
           )}
           
