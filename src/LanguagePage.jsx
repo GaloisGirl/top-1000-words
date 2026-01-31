@@ -44,6 +44,29 @@ function LanguagePage() {
     });
   };
   
+  const speakWord = (word) => {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Create a new utterance
+    const utterance = new SpeechSynthesisUtterance(word);
+    
+    // Map language codes to proper locale codes for TTS
+    const localeMap = {
+      'de': 'de-DE',
+      'es': 'es-ES',
+      'it': 'it-IT',
+      'cz': 'cs-CZ',
+      'ar': 'ar-SA'
+    };
+    
+    // Set the language for the utterance
+    utterance.lang = localeMap[languageCode] || languageCode;
+    
+    // Speak the word
+    window.speechSynthesis.speak(utterance);
+  };
+  
   const getBackgroundColor = (pos) => {
     if (pos.includes('noun')) return 'bg-yellow-100';
     if (pos.includes('verb')) return 'bg-green-100';
@@ -121,6 +144,7 @@ function LanguagePage() {
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button 
+                        onClick={() => speakWord(wordData.word)}
                         className="text-gray-400 hover:text-gray-600 text-xl"
                         aria-label={`Play audio pronunciation for ${wordData.word}`}
                       >
