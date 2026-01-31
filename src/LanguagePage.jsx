@@ -168,10 +168,17 @@ function LanguagePage() {
   };
   
   const getBackgroundColor = (pos) => {
-    if (pos.includes('noun')) return 'bg-yellow-100';
-    if (pos.includes('verb')) return 'bg-green-100';
-    if (pos.includes('adjective')) return 'bg-blue-100';
-    if (pos.includes('adverb')) return 'bg-red-100';
+    if (!pos) return '';
+    const colors = {
+      noun: 'bg-yellow-100',
+      verb: 'bg-green-100',
+      adjective: 'bg-blue-100',
+      adverb: 'bg-red-100'
+    };
+    const parts = pos.split(/[+/]/).map((part) => part.trim());
+    for (const part of parts) {
+      if (colors[part]) return colors[part];
+    }
     return '';
   };
   
