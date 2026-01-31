@@ -232,7 +232,7 @@ function LanguagePage() {
           <Link to="/" className="text-white hover:underline">
             ← Back
           </Link>
-          <h1 className="text-2xl font-bold">Top 1000 words</h1>
+          <h1 className="text-2xl font-bold">Top 100 words</h1>
         </div>
       </header>
       

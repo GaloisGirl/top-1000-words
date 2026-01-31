@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-blue-600 text-white py-4 px-6 shadow-md">
-        <h1 className="text-2xl font-bold">Top 1000 words</h1>
+        <h1 className="text-2xl font-bold">Top 100 words</h1>
       </header>
       
       <main className="flex-grow flex items-center justify-center py-8">

@@ -1,4 +1,4 @@
-A language page should first display a heading with the emoji and name of the language.
+A language page should first display a heading with the emoji, name of the language, and "Top 100 words".
 The there should be a table of the most frequent 100 words in that language, ordered from most to least frequent.
 Columns should be as follow:
 1. Rank
