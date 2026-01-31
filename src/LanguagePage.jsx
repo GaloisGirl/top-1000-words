@@ -175,9 +175,10 @@ function LanguagePage() {
       adjective: 'bg-blue-100',
       adverb: 'bg-red-100'
     };
-    const parts = pos.split(/[+/]/).map((part) => part.trim());
-    for (const part of parts) {
-      if (colors[part]) return colors[part];
+    const priority = ['noun', 'verb', 'adjective', 'adverb'];
+    const parts = new Set(pos.split(/[+/]/).map((part) => part.trim()));
+    for (const part of priority) {
+      if (parts.has(part)) return colors[part];
     }
     return '';
   };
