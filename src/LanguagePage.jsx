@@ -261,28 +261,28 @@ function LanguagePage() {
             <table className="w-full border-collapse bg-white shadow-lg rounded-lg">
               <thead>
                 <tr className="bg-gray-100 border-b-2 border-gray-300">
-                  <th className="py-3 px-4 text-left font-semibold text-gray-700">Rank</th>
-                  <th className="py-3 px-4 text-left font-semibold text-gray-700">Word</th>
-                  <th className="py-3 px-4 text-left font-semibold text-gray-700">Part of Speech</th>
-                  <th className="py-3 px-4 text-left font-semibold text-gray-700">Gender</th>
-                  <th className="py-3 px-4 text-center font-semibold text-gray-700">Audio</th>
-                  <th className="py-3 px-4 text-left font-semibold text-gray-700">Translation</th>
+                  <th className="py-2 px-2 text-left font-semibold text-gray-700">Rank</th>
+                  <th className="py-2 px-2 text-left font-semibold text-gray-700">Word</th>
+                  <th className="py-2 px-2 text-left font-semibold text-gray-700">Part of Speech</th>
+                  <th className="py-2 px-2 text-left font-semibold text-gray-700">Gender</th>
+                  <th className="py-2 px-2 text-center font-semibold text-gray-700">Audio</th>
+                  <th className="py-2 px-2 text-left font-semibold text-gray-700">Translation</th>
                 </tr>
               </thead>
               <tbody>
                 {words.map((wordData) => (
                   <tr key={wordData.rank} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="py-3 px-4 text-gray-700">{wordData.rank}</td>
-                    <td className={`py-3 px-4 font-semibold ${getBackgroundColor(wordData.pos)}`}>
+                    <td className="py-2 px-2 text-gray-700">{wordData.rank}</td>
+                    <td className={`py-2 px-2 font-semibold ${getBackgroundColor(wordData.pos)}`}>
                       {wordData.word}
                     </td>
-                    <td className="py-3 px-4 text-gray-600 text-sm">
+                    <td className="py-2 px-2 text-gray-600 text-sm">
                       {getPosAbbreviation(wordData.pos)}
                     </td>
-                    <td className="py-3 px-4 text-gray-600 text-sm">
+                    <td className="py-2 px-2 text-gray-600 text-sm">
                       {getGenderAbbreviation(wordData.gender)}
                     </td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-2 px-2 text-center">
                       <button 
                         onClick={() => speakWord(wordData.word, wordData.rank)}
                         className={`text-xl transition-all ${
@@ -299,7 +299,7 @@ function LanguagePage() {
                         🔊
                       </button>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-2 px-2">
                       {visibleTranslations.has(wordData.rank) ? (
                         <div className="flex items-center gap-2">
                           <span className="text-gray-700">{wordData.english.join(', ')}</span>
