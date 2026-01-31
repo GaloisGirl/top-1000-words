@@ -171,6 +171,7 @@ function LanguagePage() {
     if (pos.includes('noun')) return 'bg-yellow-100';
     if (pos.includes('verb')) return 'bg-green-100';
     if (pos.includes('adjective')) return 'bg-blue-100';
+    if (pos.includes('adverb')) return 'bg-red-100';
     return '';
   };
   
