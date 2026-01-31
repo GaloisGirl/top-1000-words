@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { languages } from './config/languages';
 
 function LanguagePage() {
@@ -8,6 +8,13 @@ function LanguagePage() {
   
   // State to track which translations are visible
   const [visibleTranslations, setVisibleTranslations] = useState(new Set());
+  
+  // State to track TTS availability and status
+  const [ttsAvailable, setTtsAvailable] = useState(false);
+  const [ttsError, setTtsError] = useState('');
+  const [runtimeError, setRuntimeError] = useState('');
+  const [speakingRank, setSpeakingRank] = useState(null);
+  const utteranceRef = useRef(null);
   
   // Import the language data dynamically
   const [words, setWords] = useState([]);
@@ -18,6 +25,36 @@ function LanguagePage() {
       .then(module => setWords(module.default.slice(0, 100)))
       .catch(err => console.error('Error loading language data:', err));
   }, [languageCode]);
+  
+  // Check TTS availability
+  useEffect(() => {
+    // Check if Web Speech API is available
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      setTtsAvailable(true);
+      
+      // Load voices (some browsers need this to be triggered)
+      const loadVoices = () => {
+        window.speechSynthesis.getVoices();
+      };
+      
+      // Some browsers fire voiceschanged event when voices are loaded
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+      
+      loadVoices();
+    } else {
+      setTtsAvailable(false);
+      setTtsError('Text-to-Speech is not supported in your browser. Try using Chrome, Edge, Safari, or Firefox.');
+    }
+    
+    // Cleanup
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
   
   if (!language) {
     return (
@@ -53,24 +90,81 @@ function LanguagePage() {
     'ar': 'ar-SA'
   };
   
-  const speakWord = (word) => {
-    // Check if Web Speech API is available
+  const speakWord = (word, rank) => {
+    // Check if Web Speech API is available (should not happen due to disabled buttons)
     if (!window.speechSynthesis) {
-      console.warn('Text-to-Speech is not supported in this browser');
       return;
     }
     
+    // Clear any previous runtime errors
+    setRuntimeError('');
+    
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
+    setSpeakingRank(null);
     
     // Create a new utterance
     const utterance = new SpeechSynthesisUtterance(word);
+    utteranceRef.current = utterance;
     
     // Set the language for the utterance
     utterance.lang = localeMap[languageCode] || languageCode;
     
+    // Set speech rate (slightly slower for better pronunciation)
+    utterance.rate = 0.9;
+    
+    // Handle events
+    utterance.onstart = () => {
+      setSpeakingRank(rank);
+    };
+    
+    utterance.onend = () => {
+      setSpeakingRank(null);
+      utteranceRef.current = null;
+    };
+    
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event);
+      setSpeakingRank(null);
+      utteranceRef.current = null;
+      
+      if (event.error === 'not-allowed') {
+        setRuntimeError('Text-to-Speech was blocked. Please check your browser permissions.');
+      } else if (event.error === 'network') {
+        setRuntimeError('Text-to-Speech requires an internet connection.');
+      } else {
+        setRuntimeError('Text-to-Speech failed. Your browser may not support this language.');
+      }
+      
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => setRuntimeError(''), 5000);
+    };
+    
+    // Get available voices
+    const voices = window.speechSynthesis.getVoices();
+    const targetLang = localeMap[languageCode] || languageCode;
+    
+    // Try to find a voice that matches the language
+    const matchingVoice = voices.find(voice => 
+      voice.lang.startsWith(targetLang) || 
+      voice.lang.startsWith(languageCode)
+    );
+    
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
+    }
+    
     // Speak the word
-    window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Error speaking word:', error);
+      setRuntimeError('Text-to-Speech failed. Please try again.');
+      setSpeakingRank(null);
+      
+      // Auto-dismiss error after 5 seconds
+      setTimeout(() => setRuntimeError(''), 5000);
+    }
   };
   
   const getBackgroundColor = (pos) => {
@@ -141,6 +235,28 @@ function LanguagePage() {
             <span>{language.name}</span>
           </h2>
           
+          {/* TTS availability notice */}
+          {!ttsAvailable && ttsError && (
+            <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
+              <p className="font-semibold">⚠️ Text-to-Speech Not Available</p>
+              <p className="text-sm mt-1">{ttsError}</p>
+              <p className="text-sm mt-2">
+                <strong>Supported browsers:</strong> Chrome, Edge, Safari (desktop & mobile), Firefox (desktop)
+              </p>
+              <p className="text-sm mt-1">
+                <strong>Not supported:</strong> DuckDuckGo browser, some mobile browsers
+              </p>
+            </div>
+          )}
+          
+          {/* TTS runtime error notice */}
+          {runtimeError && (
+            <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+              <p className="font-semibold">🔴 Text-to-Speech Error</p>
+              <p className="text-sm mt-1">{runtimeError}</p>
+            </div>
+          )}
+          
           <div className="overflow-x-auto">
             <table className="w-full border-collapse bg-white shadow-lg rounded-lg">
               <thead>
@@ -168,9 +284,17 @@ function LanguagePage() {
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button 
-                        onClick={() => speakWord(wordData.word)}
-                        className="text-gray-400 hover:text-gray-600 text-xl"
+                        onClick={() => speakWord(wordData.word, wordData.rank)}
+                        className={`text-xl transition-all ${
+                          !ttsAvailable 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : speakingRank === wordData.rank
+                              ? 'text-green-600 animate-pulse'
+                              : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                        disabled={!ttsAvailable}
                         aria-label={`Play audio pronunciation for ${wordData.word}`}
+                        title={!ttsAvailable ? 'Text-to-Speech not available in this browser' : 'Click to hear pronunciation'}
                       >
                         🔊
                       </button>
