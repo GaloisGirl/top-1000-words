@@ -76,6 +76,24 @@ function LanguagePage() {
     return abbreviations[pos] || pos;
   };
   
+  const getGenderAbbreviation = (gender) => {
+    if (!gender) return '';
+    
+    const abbreviations = {
+      'masculine': 'm.',
+      'feminine': 'f.',
+      'neuter': 'n.',
+      'plural': 'pl.'
+    };
+    
+    // Handle compound genders like "masculine/neuter"
+    if (gender.includes('/')) {
+      return gender.split('/').map(g => abbreviations[g.trim()] || g).join('/');
+    }
+    
+    return abbreviations[gender] || gender;
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-blue-600 text-white py-4 px-6 shadow-md">
@@ -117,7 +135,7 @@ function LanguagePage() {
                       {getPosAbbreviation(wordData.pos)}
                     </td>
                     <td className="py-3 px-4 text-gray-600 text-sm">
-                      {wordData.gender || ''}
+                      {getGenderAbbreviation(wordData.gender)}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button 
