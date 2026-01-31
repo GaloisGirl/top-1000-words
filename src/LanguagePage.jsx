@@ -169,16 +169,15 @@ function LanguagePage() {
   
   const getBackgroundColor = (pos) => {
     if (!pos) return '';
-    const colors = {
-      noun: 'bg-yellow-100',
-      verb: 'bg-green-100',
-      adjective: 'bg-blue-100',
-      adverb: 'bg-red-100'
-    };
-    const priority = ['noun', 'verb', 'adjective', 'adverb'];
-    const parts = new Set(pos.split(/[+/]/).map((part) => part.trim()));
-    for (const part of priority) {
-      if (parts.has(part)) return colors[part];
+    const orderedColors = [
+      ['noun', 'bg-yellow-100'],
+      ['verb', 'bg-green-100'],
+      ['adjective', 'bg-blue-100'],
+      ['adverb', 'bg-red-100']
+    ];
+    const posTokens = new Set(pos.split(/[+/]/).map((part) => part.trim()));
+    for (const [part, color] of orderedColors) {
+      if (posTokens.has(part)) return color;
     }
     return '';
   };
