@@ -44,6 +44,15 @@ function LanguagePage() {
     });
   };
   
+  // Map language codes to proper locale codes for TTS
+  const localeMap = {
+    'de': 'de-DE',
+    'es': 'es-ES',
+    'it': 'it-IT',
+    'cz': 'cs-CZ',
+    'ar': 'ar-SA'
+  };
+  
   const speakWord = (word) => {
     // Check if Web Speech API is available
     if (!window.speechSynthesis) {
@@ -56,15 +65,6 @@ function LanguagePage() {
     
     // Create a new utterance
     const utterance = new SpeechSynthesisUtterance(word);
-    
-    // Map language codes to proper locale codes for TTS
-    const localeMap = {
-      'de': 'de-DE',
-      'es': 'es-ES',
-      'it': 'it-IT',
-      'cz': 'cs-CZ',
-      'ar': 'ar-SA'
-    };
     
     // Set the language for the utterance
     utterance.lang = localeMap[languageCode] || languageCode;
