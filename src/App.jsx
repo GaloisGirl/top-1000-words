@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { languages } from './config/languages'
 
 function App() {
@@ -15,13 +16,14 @@ function App() {
           
           <div className="flex flex-col gap-4 w-full">
             {languages.map((language) => (
-              <button
+              <Link
                 key={language.name}
+                to={`/language/${language.code}`}
                 className="w-full py-4 px-6 text-2xl font-semibold border-4 border-blue-600 rounded-2xl bg-white text-gray-800 hover:bg-blue-50 transition-colors flex items-center justify-center gap-3"
               >
                 <span className="text-3xl">{language.emoji}</span>
                 <span>{language.name}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
