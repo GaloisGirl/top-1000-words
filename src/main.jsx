@@ -5,7 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import LanguagePage from './LanguagePage.jsx'
 
-const basename = '/top-1000-words'
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
 const redirect = sessionStorage.getItem('redirect')
 if (redirect) {
   sessionStorage.removeItem('redirect')

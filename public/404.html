@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <title>Redirecting...</title>
     <script>
-      const basename = '/top-1000-words'
-      const path = window.location.pathname.slice(basename.length) || '/'
+      const pathname = window.location.pathname
+      const basename = pathname.slice(0, pathname.indexOf('/language/'))
+      const path = pathname.slice(basename.length) || '/'
       sessionStorage.setItem('redirect', path + window.location.search + window.location.hash)
       window.location.replace(`${basename}/`)
     </script>
