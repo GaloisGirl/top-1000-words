@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting...</title>
+    <script>
+      const basename = '/top-1000-words'
+      const path = window.location.pathname.slice(basename.length) || '/'
+      sessionStorage.setItem('redirect', path + window.location.search + window.location.hash)
+      window.location.replace(`${basename}/`)
+    </script>
+  </head>
+  <body></body>
+</html>
